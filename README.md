@@ -3,9 +3,10 @@
 **Make your agent's commands human readable and get an execution summary after every tool call.**
 
 ![Claude Code skill and plugin](https://img.shields.io/badge/Claude%20Code-skill%20%26%20plugin-D97757.svg)
+![Codex skill](https://img.shields.io/badge/Codex-skill-10A37F.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
-When a coding agent works, it runs dozens of commands and edits, calls other services and hands work to subagents. You see a stream of dense one-liners and unlabeled output, and the agent rarely says what each result meant. This [Claude Code](https://claude.com/claude-code) skill makes the agent narrate its work: commands read like a commented script, output explains itself, and every tool call ends with a one-line summary of what came back.
+When a coding agent works, it runs dozens of commands and edits, calls other services and hands work to subagents. You see a stream of dense one-liners and unlabeled output, and the agent rarely says what each result meant. This skill, for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex), makes the agent narrate its work: commands read like a commented script, output explains itself, and every tool call ends with a one-line summary of what came back.
 
 ## Before and after
 
@@ -89,9 +90,11 @@ The full rules are in [SKILL.md](SKILL.md).
 
 ## Install
 
+### Claude Code
+
 Pick one route. With both, two copies of the skill load (the plugin's is named `readable-tool-calls:readable-tool-calls`), and they can drift apart.
 
-### As a Claude Code plugin
+#### As a plugin
 
 In a Claude Code session, add this repo as a plugin marketplace, then install the plugin:
 
@@ -109,7 +112,7 @@ claude plugin marketplace update readable-tool-calls
 claude plugin update readable-tool-calls@readable-tool-calls
 ```
 
-### As a plain skill
+#### As a plain skill
 
 For all your projects, clone it into your user-level skills folder, and pull to update:
 
@@ -120,13 +123,32 @@ git -C ~/.claude/skills/readable-tool-calls pull
 
 For a single repository, copy `SKILL.md` to `.claude/skills/readable-tool-calls/SKILL.md` inside it.
 
+### Codex
+
+Codex reads user-level skills from `~/.agents/skills`. Clone it there, and pull to update:
+
+```bash
+git clone https://github.com/BigRedT/readable-tool-calls ~/.agents/skills/readable-tool-calls
+git -C ~/.agents/skills/readable-tool-calls pull
+```
+
+For a single repository, copy `SKILL.md` to `.agents/skills/readable-tool-calls/SKILL.md` inside it.
+
+### Both agents, one copy
+
+If you use both, install the plain skill for Claude Code, then link Codex to the same folder, so one `git pull` updates both:
+
+```bash
+ln -s ~/.claude/skills/readable-tool-calls ~/.agents/skills/readable-tool-calls
+```
+
 ## Make it always on
 
-Claude Code loads a skill when its description matches the task, so in a long session an agent can drift and stop applying it. To make it apply to every tool call, add a pointer to `~/.claude/CLAUDE.md`, which loads at the start of every session:
+Agents load a skill when its description matches the task, so in a long session an agent can drift and stop applying it. To make it apply to every tool call, add a pointer to the instructions file your agent reads at the start of every session: `~/.claude/CLAUDE.md` for Claude Code, `~/.codex/AGENTS.md` for Codex.
 
 ```markdown
 ## Tool calls
-- Follow the readable-tool-calls skill for every tool call, all session (installed as a plugin it is named readable-tool-calls:readable-tool-calls). Load it before the first tool call; it ends each tool call with a plain line `↳ **Execution summary** · <what came back and what it means>`.
+- Follow the readable-tool-calls skill for every tool call, all session (as a Claude Code plugin it is named readable-tool-calls:readable-tool-calls). Load it before the first tool call; it ends each tool call with a plain line `↳ **Execution summary** · <what came back and what it means>`.
 ```
 
 The pointer names the skill and its one-line format; the full rules stay in the skill, so updating the skill updates them.
