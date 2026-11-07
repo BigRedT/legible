@@ -15,7 +15,7 @@ The agent checks on a nightly test job running on another machine.
 
 <sub>An illustration rendered from the example in SKILL.md, not a recording of a session.</sub>
 
-You can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
+Without the skill, you're left asking whether 84 is good and whether the job finished. With it, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
 
 <details>
 <summary>The same example as text</summary>
@@ -141,7 +141,7 @@ If you change the example, update `assets/before-after.html` to match and render
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=1000,930 \
+  --force-device-scale-factor=2 --window-size=1000,900 \
   --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
 ```
 
