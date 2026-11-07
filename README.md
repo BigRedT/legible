@@ -1,6 +1,6 @@
 # readable-tool-calls
 
-**Makes your coding agent's shell commands human readable and adds a quick execution summary to every tool call.**
+**Make your agent's commands human readable and get an execution summary after every tool call.**
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Claude Code skill and plugin](https://img.shields.io/badge/Claude%20Code-skill%20%26%20plugin-D97757.svg)
