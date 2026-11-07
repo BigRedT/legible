@@ -1,6 +1,6 @@
 # readable-tool-calls
 
-**Follow what your coding agent is doing without reading raw output.**
+**Makes your coding agent's shell commands human readable and adds a quick execution summary to every tool call.**
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Claude Code skill and plugin](https://img.shields.io/badge/Claude%20Code-skill%20%26%20plugin-D97757.svg)
