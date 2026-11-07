@@ -11,6 +11,15 @@ When a coding agent works, it runs dozens of commands and edits, calls other ser
 
 The agent checks on a nightly test job running on another machine.
 
+![The same status check without and with readable-tool-calls: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
+
+<sub>An illustration rendered from the example in SKILL.md, not a recording of a session.</sub>
+
+You can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
+
+<details>
+<summary>The same example as text</summary>
+
 **Without the skill**
 
 ```bash
@@ -64,7 +73,7 @@ tests passed: 84 of 120
 
 ↳ **Execution summary** · still running, 84 of 120 tests passed, no result.json yet
 
-You can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
+</details>
 
 ## What it does
 
@@ -135,6 +144,14 @@ The pointer names the skill and its one-line format; the full rules stay in the 
 ## Changing the skill
 
 Raise `version` in `.claude-plugin/plugin.json` with each change to `SKILL.md`, so plugin installs pick up the new copy.
+
+If you change the example, update `assets/before-after.html` to match and render the image again (macOS, with Chrome):
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+  --force-device-scale-factor=2 --window-size=1000,1100 \
+  --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
+```
 
 ## License
 
