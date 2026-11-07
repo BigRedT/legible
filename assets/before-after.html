@@ -97,25 +97,17 @@
 <span class="v">LOG</span>=<span class="s">"$JOB_DIR/run.log"</span>
 
 <span class="c"># Is the build process still alive?</span>
-<span class="k">if</span> pgrep -f <span class="s">"nightly_build.*2041"</span> &gt; /dev/null; <span class="k">then</span>
-  echo <span class="s">"process: running"</span>
-<span class="k">else</span>
-  echo <span class="s">"process: not running"</span>
-<span class="k">fi</span>
+pgrep -f <span class="s">"nightly_build.*2041"</span> &gt; /dev/null \
+  &amp;&amp; echo <span class="s">"process: running"</span> \
+  || echo <span class="s">"process: not running"</span>
 
 <span class="c"># result.json appears only when the job has finished</span>
-<span class="k">if</span> [ -f <span class="s">"$JOB_DIR/result.json"</span> ]; <span class="k">then</span>
-  echo <span class="s">"result.json: present"</span>
-<span class="k">else</span>
-  echo <span class="s">"result.json: not yet"</span>
-<span class="k">fi</span>
+test -f <span class="s">"$JOB_DIR/result.json"</span> \
+  &amp;&amp; echo <span class="s">"result.json: present"</span> \
+  || echo <span class="s">"result.json: not yet"</span>
 
-<span class="c"># How far it has got: count the lines that start with PASSED</span>
-<span class="k">if</span> [ -f <span class="s">"$LOG"</span> ]; <span class="k">then</span>
-  echo <span class="s">"tests passed: $(grep -c '^PASSED' "$LOG") of 120"</span>
-<span class="k">else</span>
-  echo <span class="s">"run.log: not created yet"</span>
-<span class="k">fi</span>
+<span class="c"># How far it has got</span>
+echo <span class="s">"tests passed: $(grep -c '^PASSED' "$LOG") of 120"</span>
 EOF</pre>
   <pre class="out"><span class="gutter">⎿ </span>process: running
   result.json: not yet

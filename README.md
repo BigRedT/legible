@@ -43,25 +43,17 @@ JOB_DIR=/srv/jobs/nightly-2041
 LOG="$JOB_DIR/run.log"
 
 # Is the build process still alive?
-if pgrep -f "nightly_build.*2041" > /dev/null; then
-  echo "process: running"
-else
-  echo "process: not running"
-fi
+pgrep -f "nightly_build.*2041" > /dev/null \
+  && echo "process: running" \
+  || echo "process: not running"
 
 # result.json appears only when the job has finished
-if [ -f "$JOB_DIR/result.json" ]; then
-  echo "result.json: present"
-else
-  echo "result.json: not yet"
-fi
+test -f "$JOB_DIR/result.json" \
+  && echo "result.json: present" \
+  || echo "result.json: not yet"
 
-# How far it has got: count the lines that start with PASSED
-if [ -f "$LOG" ]; then
-  echo "tests passed: $(grep -c '^PASSED' "$LOG") of 120"
-else
-  echo "run.log: not created yet"
-fi
+# How far it has got
+echo "tests passed: $(grep -c '^PASSED' "$LOG") of 120"
 EOF
 ```
 
@@ -81,7 +73,7 @@ tests passed: 84 of 120
 - **Output explains itself.** Values are labeled, logs are filtered to the lines that matter, both outcomes of a check are stated, and secrets are never printed.
 - **Every tool call ends with a summary.** Shell commands, file edits, calls to other services and subagents each get one line saying what came back and what it means. A batch of reads shares one.
 - **It holds up in long sessions.** A short check before each reply catches dropped summaries, the usual way agents drift.
-- **It knows the shell traps.** zsh quirks, heredocs that silently swallow the rest of a script, and `grep` counts that mislead.
+- **It changes presentation only.** The agent runs the same commands and makes the same edits; only how they are written and reported changes.
 
 ## A session at a glance
 
@@ -149,7 +141,7 @@ If you change the example, update `assets/before-after.html` to match and render
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=1000,1100 \
+  --force-device-scale-factor=2 --window-size=1000,930 \
   --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
 ```
 
