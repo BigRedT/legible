@@ -10,11 +10,11 @@ When a coding agent works, it runs dozens of commands and edits, calls other ser
 
 ## Before and after
 
-The agent checks on a nightly test job running on another machine.
+In one command, the agent copies training code to a GPU machine, starts the run and checks on it.
 
-![The same status check without and with legible: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
+![The same command without and with legible: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
 
-Without the skill, you're left asking whether 84 is good and whether the job finished. With it, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
+Without the skill, you're left asking what 48213 and 0 mean. With it, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
 
 <details>
 <summary>The same example as text</summary>
@@ -22,47 +22,47 @@ Without the skill, you're left asking whether 84 is good and whether the job fin
 **Without the skill**
 
 ```bash
-ssh build-host 'pgrep -f "nightly_build.*2041" >/dev/null && echo running || echo not running; ls /srv/jobs/nightly-2041; grep -c PASSED /srv/jobs/nightly-2041/run.log'
+rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ gpu-box:sft/ && ssh gpu-box 'cd sft; nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null & echo $!; sleep 90; grep -c Traceback train.log; tail -1 train.log'
 ```
 
 ```
-running
-run.log
-84
+48213
+0
+step 12 | loss 2.39 | 3.4 s/step
 ```
 
-Is 84 good? Did the job finish? You have to decode the command to find out, and the agent has already moved on.
+What is 48213? Is 0 good or bad? You have to decode the command to find out, and the agent has already moved on.
 
 **With the skill**
 
 ```bash
-ssh -o BatchMode=yes build-host bash -s <<'EOF'
-# The job's output folder and its log
-JOB_DIR=/srv/jobs/nightly-2041
-LOG="$JOB_DIR/run.log"
+# The GPU machine
+HOST=gpu-box
 
-# Is the build process still alive?
-pgrep -f "nightly_build.*2041" > /dev/null \
-  && echo "process: running" \
-  || echo "process: not running"
+# Copy the code to the GPU machine (minus git history, virtualenv and checkpoints),
+# then start training there, but only if the copy succeeded
+rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ "$HOST:sft/" \
+  && ssh "$HOST" bash -s <<'EOF'
+cd sft
 
-# result.json appears only when the job has finished
-test -f "$JOB_DIR/result.json" \
-  && echo "result.json: present" \
-  || echo "result.json: not yet"
+# Train on all 8 GPUs, in the background so it outlives this ssh session
+nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null &
+echo "started: pid $!"
 
-# How far it has got
-echo "tests passed: $(grep -c '^PASSED' "$LOG") of 120"
+# Loading the model takes a while, so wait 90 seconds before checking
+sleep 90
+echo "tracebacks in log: $(grep -c Traceback train.log)"
+echo "last log line: $(tail -1 train.log)"
 EOF
 ```
 
 ```
-process: running
-result.json: not yet
-tests passed: 84 of 120
+started: pid 48213
+tracebacks in log: 0
+last log line: step 12 | loss 2.39 | 3.4 s/step
 ```
 
-↳ **Execution summary** · still running, 84 of 120 tests passed, no result.json yet
+↳ **Execution summary** · code synced and training started (pid 48213): after 90 s it's at step 12, loss 2.39 at 3.4 s per step, with no tracebacks in the log
 
 </details>
 
@@ -209,7 +209,7 @@ If you change the example, update `assets/before-after.html` to match and render
 ```bash
 # Render the updated example image with Chrome.
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=1000,900 \
+  --force-device-scale-factor=2 --window-size=1000,942 \
   --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
 ```
 

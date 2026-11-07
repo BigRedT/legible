@@ -20,7 +20,7 @@ Apply it for the whole session. The usual failure is drift: summaries get droppe
 - **Use a heredoc script for remote or multi-step work**, not a quoted one-liner with escaped quotes: `ssh host bash -s <<'EOF'`. Quote the delimiter so variables expand on the remote side, and nest a different one (`<<'PY'`) for an inner script.
 - **Make waiting loops readable.** Say in a comment what ends the loop, and finish with a labeled line giving the outcome and the time.
 - **One purpose per command.** If a command does several unrelated things, split it or head each part with a comment.
-- **Describe it plainly.** If your tool asks for a short description of each command, say in plain words what it does ("Check whether the nightly build finished"). Don't repeat the command text.
+- **Describe it plainly.** If your tool asks for a short description of each command, say in plain words what it does ("Copy the code to the GPU machine and start training"). Don't repeat the command text.
 
 ## 2. Make command output readable on its own
 
@@ -65,35 +65,35 @@ If you find you dropped summaries earlier, say so, add the missing ones briefly,
 
 ## Examples
 
-A shell command: commented steps, named paths, labeled output, then the summary.
+A shell command: commented steps, the host named once, a heredoc for the remote part, labeled output, then the summary.
 
 ```bash
-ssh -o BatchMode=yes build-host bash -s <<'EOF'
-# The job's output folder and its log
-JOB_DIR=/srv/jobs/nightly-2041
-LOG="$JOB_DIR/run.log"
+# The GPU machine
+HOST=gpu-box
 
-# Is the build process still alive?
-pgrep -f "nightly_build.*2041" > /dev/null \
-  && echo "process: running" \
-  || echo "process: not running"
+# Copy the code to the GPU machine (minus git history, virtualenv and checkpoints),
+# then start training there, but only if the copy succeeded
+rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ "$HOST:sft/" \
+  && ssh "$HOST" bash -s <<'EOF'
+cd sft
 
-# result.json appears only when the job has finished
-test -f "$JOB_DIR/result.json" \
-  && echo "result.json: present" \
-  || echo "result.json: not yet"
+# Train on all 8 GPUs, in the background so it outlives this ssh session
+nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null &
+echo "started: pid $!"
 
-# How far it has got
-echo "tests passed: $(grep -c '^PASSED' "$LOG") of 120"
+# Loading the model takes a while, so wait 90 seconds before checking
+sleep 90
+echo "tracebacks in log: $(grep -c Traceback train.log)"
+echo "last log line: $(tail -1 train.log)"
 EOF
 ```
 
-↳ **Execution summary** · still running, 84 of 120 tests passed, no result.json yet
+↳ **Execution summary** · code synced and training started (pid 48213): after 90 s it's at step 12, loss 2.39 at 3.4 s per step, with no tracebacks in the log
 
-The same check written the hard-to-read way:
+The same command written the hard-to-read way:
 
 ```bash
-ssh build-host 'pgrep -f "nightly_build.*2041" >/dev/null && echo running || echo not running; ls /srv/jobs/nightly-2041; grep -c PASSED /srv/jobs/nightly-2041/run.log'
+rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ gpu-box:sft/ && ssh gpu-box 'cd sft; nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null & echo $!; sleep 90; grep -c Traceback train.log; tail -1 train.log'
 ```
 
 Summaries after other kinds of call:
