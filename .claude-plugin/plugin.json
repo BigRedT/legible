@@ -1,8 +1,8 @@
 {
-  "name": "readable-tool-calls",
+  "name": "legible",
   "description": "Makes a coding agent's tool calls easy for a person to follow: commented shell commands with labeled output, and an execution summary after every tool call",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "author": { "name": "Tanmay Gupta" },
-  "repository": "https://github.com/BigRedT/readable-tool-calls",
+  "repository": "https://github.com/BigRedT/legible",
   "license": "MIT"
 }

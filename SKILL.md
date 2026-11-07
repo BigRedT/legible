@@ -1,1 +1,1 @@
-skills/readable-tool-calls/SKILL.md
+skills/legible/SKILL.md

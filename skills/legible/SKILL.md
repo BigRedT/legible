@@ -1,9 +1,9 @@
 ---
-name: readable-tool-calls
+name: legible
 description: How a coding agent presents its tool calls and their results so a human can follow the session without reading raw output. Shell commands are written as commented narration with labeled, filtered output, and every tool call (or batch of reads) is followed by a "↳ Execution summary" line saying what came back, what changed and what it means. It changes presentation only, not what the agent does. Use this for every shell command, file edit or write, external service or MCP call, web fetch, subagent, and batch of file reads or searches, for the whole session, including short status checks and routine steps, even when nobody has mentioned it.
 ---
 
-# Readable tool calls
+# Legible
 
 A person follows a coding agent's work through its tool calls and what comes back. They don't see the agent's reasoning, they often skip raw output, and they may read the session later. So shell commands should read as narration, their output should make sense on its own, and every tool call should end in a plain-language summary.
 

@@ -1,10 +1,10 @@
 {
-  "name": "readable-tool-calls",
-  "description": "The readable-tool-calls skill as a Claude Code plugin",
+  "name": "legible",
+  "description": "The legible skill as a Claude Code plugin",
   "owner": { "name": "Tanmay Gupta" },
   "plugins": [
     {
-      "name": "readable-tool-calls",
+      "name": "legible",
       "source": "./",
       "description": "Makes a coding agent's tool calls easy for a person to follow"
     }

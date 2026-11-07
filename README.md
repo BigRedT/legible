@@ -1,4 +1,4 @@
-# readable-tool-calls
+# Legible
 
 **Make your agent's commands human readable and get an execution summary after every tool call.**
 
@@ -12,7 +12,7 @@ When a coding agent works, it runs dozens of commands and edits, calls other ser
 
 The agent checks on a nightly test job running on another machine.
 
-![The same status check without and with readable-tool-calls: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
+![The same status check without and with legible: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
 
 Without the skill, you're left asking whether 84 is good and whether the job finished. With it, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
 
@@ -86,31 +86,31 @@ With the skill, a stretch of work reads like a log you can scan:
 
 ↳ **Execution summary** · created issue "Retry dropped uploads" (#482) in the team tracker, assigned to nobody yet
 
-The full rules are in [skills/readable-tool-calls/SKILL.md](skills/readable-tool-calls/SKILL.md). The root `SKILL.md` links to that same file for existing plain-skill installs.
+The full rules are in [skills/legible/SKILL.md](skills/legible/SKILL.md). The root `SKILL.md` links to that same file for existing plain-skill installs.
 
 ## Install
 
 ### Claude Code
 
-Pick one route. With both, two copies of the skill load (the plugin's is named `readable-tool-calls:readable-tool-calls`), and they can drift apart.
+Pick one route. With both, two copies of the skill load (the plugin's is named `legible:legible`), and they can drift apart.
 
 #### As a plugin
 
 In a Claude Code session, add this repo as a plugin marketplace, then install the plugin:
 
 ```
-/plugin marketplace add BigRedT/readable-tool-calls
-/plugin install readable-tool-calls@readable-tool-calls
+/plugin marketplace add BigRedT/legible
+/plugin install legible@legible
 ```
 
-The install command opens the plugin panel, where you choose a scope before it installs. From a shell, `claude plugin marketplace add BigRedT/readable-tool-calls` and `claude plugin install readable-tool-calls@readable-tool-calls` do the same, installing for your user by default.
+The install command opens the plugin panel, where you choose a scope before it installs. From a shell, `claude plugin marketplace add BigRedT/legible` and `claude plugin install legible@legible` do the same, installing for your user by default.
 
 To update, refresh the marketplace and then the plugin:
 
 ```bash
 # Refresh the marketplace, then update the installed plugin.
-claude plugin marketplace update readable-tool-calls
-claude plugin update readable-tool-calls@readable-tool-calls
+claude plugin marketplace update legible
+claude plugin update legible@legible
 ```
 
 #### As a plain skill
@@ -120,12 +120,12 @@ For all your projects, clone it into your user-level skills folder, and pull to 
 ```bash
 # Install the skill for your user.
 mkdir -p ~/.claude/skills
-git clone https://github.com/BigRedT/readable-tool-calls ~/.claude/skills/readable-tool-calls
+git clone https://github.com/BigRedT/legible ~/.claude/skills/legible
 # Pull subsequent updates.
-git -C ~/.claude/skills/readable-tool-calls pull
+git -C ~/.claude/skills/legible pull
 ```
 
-For a single repository, copy `SKILL.md` to `.claude/skills/readable-tool-calls/SKILL.md` inside it.
+For a single repository, copy `SKILL.md` to `.claude/skills/legible/SKILL.md` inside it.
 
 ### Codex
 
@@ -137,21 +137,21 @@ From a shell with a Codex CLI that supports `codex plugin`, register this reposi
 
 ```bash
 # Register the Git-backed marketplace.
-codex plugin marketplace add BigRedT/readable-tool-calls
+codex plugin marketplace add BigRedT/legible
 # Install and enable the skill plugin.
-codex plugin add readable-tool-calls@readable-tool-calls
+codex plugin add legible@legible
 ```
 
 To update, refresh the marketplace and install its current plugin version:
 
 ```bash
 # Fetch the latest marketplace snapshot.
-codex plugin marketplace upgrade readable-tool-calls
+codex plugin marketplace upgrade legible
 # Refresh the installed plugin from that snapshot.
-codex plugin add readable-tool-calls@readable-tool-calls
+codex plugin add legible@legible
 ```
 
-Check the installation with `codex plugin list --marketplace readable-tool-calls`, then start a new Codex session. Invoke the bundled skill as `$readable-tool-calls:readable-tool-calls`, or follow the always-on instructions below.
+Check the installation with `codex plugin list --marketplace legible`, then start a new Codex session. Invoke the bundled skill as `$legible:legible`, or follow the always-on instructions below.
 
 The package uses a portable `plugin.json`, the standard `skills/` directory, and a Codex marketplace at `.agents/plugins/marketplace.json`. See the [official plugin packaging documentation](https://developers.openai.com/plugins/build/plugins).
 
@@ -162,12 +162,12 @@ Codex reads user-level skills from `~/.agents/skills`. Clone it there, and pull 
 ```bash
 # Install the skill for your user.
 mkdir -p ~/.agents/skills
-git clone https://github.com/BigRedT/readable-tool-calls ~/.agents/skills/readable-tool-calls
+git clone https://github.com/BigRedT/legible ~/.agents/skills/legible
 # Pull subsequent updates.
-git -C ~/.agents/skills/readable-tool-calls pull
+git -C ~/.agents/skills/legible pull
 ```
 
-For a single repository, copy `SKILL.md` to `.agents/skills/readable-tool-calls/SKILL.md` inside it.
+For a single repository, copy `SKILL.md` to `.agents/skills/legible/SKILL.md` inside it.
 
 ### Both agents, one copy
 
@@ -176,8 +176,14 @@ If you use both, install the plain skill for Claude Code, then link Codex to the
 ```bash
 # Link the existing Claude Code plain-skill install into Codex's skill directory.
 mkdir -p ~/.agents/skills
-ln -s ~/.claude/skills/readable-tool-calls ~/.agents/skills/readable-tool-calls
+ln -s ~/.claude/skills/legible ~/.agents/skills/legible
 ```
+
+### Migrating from readable-tool-calls
+
+Legible was previously named `readable-tool-calls`. For plugin installs, uninstall `readable-tool-calls@readable-tool-calls` and remove its marketplace, then follow the install commands above for your agent. The new plugin and marketplace are both named `legible`.
+
+For a plain-skill checkout, pull the latest version; its existing folder name can stay as-is. If you installed by copying `SKILL.md`, replace it with the new file. Update any always-on instruction pointers to `legible` (or `legible:legible` for a plugin install).
 
 ## Make it always on
 
@@ -185,18 +191,18 @@ Agents load a skill when its description matches the task, so in a long session 
 
 ```markdown
 ## Tool calls
-- Follow the readable-tool-calls skill for every tool call, all session (as a plugin it is named readable-tool-calls:readable-tool-calls). Load it before the first tool call; it ends each tool call with a plain line `↳ **Execution summary** · <what came back and what it means>`.
+- Follow the legible skill for every tool call, all session (as a plugin it is named legible:legible). Load it before the first tool call; it ends each tool call with a plain line `↳ **Execution summary** · <what came back and what it means>`.
 ```
 
 The pointer names the skill and its one-line format; the full rules stay in the skill, so updating the skill updates them.
 
 ## Changing the skill
 
-Edit `skills/readable-tool-calls/SKILL.md`; the root `SKILL.md` is a relative symlink, so there is only one copy to maintain. The packaged skill must be a real file because plugin installers may skip symlinks when copying packages.
+Edit `skills/legible/SKILL.md`; the root `SKILL.md` is a relative symlink, so there is only one copy to maintain. The packaged skill must be a real file because plugin installers may skip symlinks when copying packages.
 
 Raise `version` together in `plugin.json` and `.claude-plugin/plugin.json` whenever the skill or package changes, so both agents' plugin installs pick up the new version.
 
-To test a local checkout with Codex, register its absolute path with `codex plugin marketplace add /absolute/path/to/readable-tool-calls`, then run the same plugin install and list commands above. Use this instead of Git registration for that marketplace name. Local marketplaces read the checkout directly; `marketplace upgrade` is for Git-backed marketplaces.
+To test a local checkout with Codex, register its absolute path with `codex plugin marketplace add /absolute/path/to/legible`, then run the same plugin install and list commands above. Use this instead of Git registration for that marketplace name. Local marketplaces read the checkout directly; `marketplace upgrade` is for Git-backed marketplaces.
 
 If you change the example, update `assets/before-after.html` to match and render the image again (macOS, with Chrome):
 

@@ -1,11 +1,11 @@
 {
-  "name": "readable-tool-calls",
+  "name": "legible",
   "interface": {
-    "displayName": "Readable Tool Calls"
+    "displayName": "Legible"
   },
   "plugins": [
     {
-      "name": "readable-tool-calls",
+      "name": "legible",
       "source": {
         "source": "local",
         "path": "./"
