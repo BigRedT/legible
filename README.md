@@ -13,8 +13,6 @@ The agent checks on a nightly test job running on another machine.
 
 ![The same status check without and with readable-tool-calls: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
 
-<sub>An illustration rendered from the example in SKILL.md, not a recording of a session.</sub>
-
 Without the skill, you're left asking whether 84 is good and whether the job finished. With it, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
 
 <details>
