@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "legible",
   "description": "Makes a coding agent's tool calls easy for a person to follow: commented shell commands with labeled output, and an execution summary after every tool call",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "author": {
     "name": "Tanmay Gupta"
   },
