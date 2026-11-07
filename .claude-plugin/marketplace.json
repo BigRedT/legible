@@ -1,7 +1,7 @@
 {
   "name": "readable-tool-calls",
   "description": "The readable-tool-calls skill as a Claude Code plugin",
-  "owner": { "name": "BigRedT" },
+  "owner": { "name": "Tanmay Gupta" },
   "plugins": [
     {
       "name": "readable-tool-calls",
