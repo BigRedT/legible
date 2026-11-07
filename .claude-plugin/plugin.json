@@ -1,0 +1,8 @@
+{
+  "name": "readable-tool-calls",
+  "description": "Makes a coding agent's tool calls easy for a person to follow: commented shell commands with labeled output, and an execution summary after every tool call",
+  "version": "1.0.0",
+  "author": { "name": "BigRedT" },
+  "repository": "https://github.com/BigRedT/readable-tool-calls",
+  "license": "MIT"
+}

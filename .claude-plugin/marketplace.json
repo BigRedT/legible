@@ -1,0 +1,12 @@
+{
+  "name": "readable-tool-calls",
+  "description": "The readable-tool-calls skill as a Claude Code plugin",
+  "owner": { "name": "BigRedT" },
+  "plugins": [
+    {
+      "name": "readable-tool-calls",
+      "source": "./",
+      "description": "Makes a coding agent's tool calls easy for a person to follow"
+    }
+  ]
+}
