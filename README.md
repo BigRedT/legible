@@ -2,8 +2,8 @@
 
 **Make your agent's commands human readable and get an execution summary after every tool call.**
 
-![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Claude Code skill and plugin](https://img.shields.io/badge/Claude%20Code-skill%20%26%20plugin-D97757.svg)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
 When a coding agent works, it runs dozens of commands and edits, calls other services and hands work to subagents. You see a stream of dense one-liners and unlabeled output, and the agent rarely says what each result meant. This [Claude Code](https://claude.com/claude-code) skill makes the agent narrate its work: commands read like a commented script, output explains itself, and every tool call ends with a one-line summary of what came back.
 
