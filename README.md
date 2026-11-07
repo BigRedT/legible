@@ -1,12 +1,31 @@
 # readable-tool-calls
 
-A [Claude Code](https://claude.com/claude-code) skill that makes a coding agent's tool calls easy for a person to follow. The agent writes shell commands as commented narration with labeled output, and follows every tool call with a one-line execution summary saying what came back and what it means.
+**Follow what your coding agent is doing without reading raw output.**
 
-The person watching, or reading the session later, doesn't see the agent's reasoning and often skips raw output. With this skill they can follow the work through the comments and summaries alone.
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+![Claude Code skill and plugin](https://img.shields.io/badge/Claude%20Code-skill%20%26%20plugin-D97757.svg)
 
-## What it looks like
+When a coding agent works, it runs dozens of commands and edits, calls other services and hands work to subagents. You see a stream of dense one-liners and unlabeled output, and the agent rarely says what each result meant. This [Claude Code](https://claude.com/claude-code) skill makes the agent narrate its work: commands read like a commented script, output explains itself, and every tool call ends with a one-line summary of what came back.
 
-A status check on a remote job, written as the skill asks:
+## Before and after
+
+The agent checks on a nightly test job running on another machine.
+
+**Without the skill**
+
+```bash
+ssh build-host 'pgrep -f "nightly_build.*2041" >/dev/null && echo running || echo not running; ls /srv/jobs/nightly-2041; grep -c PASSED /srv/jobs/nightly-2041/run.log'
+```
+
+```
+running
+run.log
+84
+```
+
+Is 84 good? Did the job finish? You have to decode the command to find out, and the agent has already moved on.
+
+**With the skill**
 
 ```bash
 ssh -o BatchMode=yes build-host bash -s <<'EOF'
@@ -37,15 +56,37 @@ fi
 EOF
 ```
 
+```
+process: running
+result.json: not yet
+tests passed: 84 of 120
+```
+
 ↳ **Execution summary** · still running, 84 of 120 tests passed, no result.json yet
 
-The same kind of summary follows file edits, calls to other services and subagents:
+You can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
+
+## What it does
+
+- **Commands read as narration.** Every step gets a comment, one step per line, and remote work goes in a heredoc script instead of a quoted one-liner.
+- **Output explains itself.** Values are labeled, logs are filtered to the lines that matter, both outcomes of a check are stated, and secrets are never printed.
+- **Every tool call ends with a summary.** Shell commands, file edits, calls to other services and subagents each get one line saying what came back and what it means. A batch of reads shares one.
+- **It holds up in long sessions.** A short check before each reply catches dropped summaries, the usual way agents drift.
+- **It knows the shell traps.** zsh quirks, heredocs that silently swallow the rest of a script, and `grep` counts that mislead.
+
+## A session at a glance
+
+With the skill, a stretch of work reads like a log you can scan:
+
+↳ **Execution summary** · read the three config loaders: only `load_env()` honors overrides, so the bug is in `load_file()`
 
 ↳ **Execution summary** · `cli/parser.py`: added a `--dry-run` flag to `main()`; the 12 parser tests pass
 
+↳ **Execution summary** · full test suite: 1,204 passed, 3 skipped, none failed
+
 ↳ **Execution summary** · created issue "Retry dropped uploads" (#482) in the team tracker, assigned to nobody yet
 
-The full rules are in [SKILL.md](SKILL.md): how to write commands, how to shape their output, what each kind of summary says, a check to run before sending, and shell pitfalls that make output misleading.
+The full rules are in [SKILL.md](SKILL.md).
 
 ## Install
 
@@ -93,7 +134,7 @@ The pointer names the skill and its one-line format; the full rules stay in the 
 
 ## Changing the skill
 
-Raise `version` in `.claude-plugin/plugin.json` with each change, so plugin installs pick up the new copy.
+Raise `version` in `.claude-plugin/plugin.json` with each change to `SKILL.md`, so plugin installs pick up the new copy.
 
 ## License
 
