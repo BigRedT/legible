@@ -12,14 +12,14 @@ When a coding agent works, it runs dozens of commands and edits, calls other ser
 
 In one command, the agent copies training code to a GPU machine, starts the run and checks on it.
 
-![The same command without and with legible: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary](assets/before-after.png)
+![The same command without and with Legible, side by side: a dense one-liner with unlabeled output, then a commented script with labeled output and an execution summary, with notes marking each difference](assets/before-after.png)
 
-Without the skill, you're left asking what 48213 and 0 mean. With it, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
+With Legible, you can read the comments alone and know the plan, read the output alone and know the state, or read just the summary.
 
 <details>
 <summary>The same example as text</summary>
 
-**Without the skill**
+**Without Legible**
 
 ```bash
 rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ gpu-box:sft/ && ssh gpu-box 'cd sft; nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null & echo $!; sleep 90; grep -c Traceback train.log; tail -1 train.log'
@@ -33,23 +33,25 @@ step 12 | loss 2.39 | 3.4 s/step
 
 What is 48213? Is 0 good or bad? You have to decode the command to find out, and the agent has already moved on.
 
-**With the skill**
+**With Legible**
 
 ```bash
 # The GPU machine
 HOST=gpu-box
 
-# Copy the code to the GPU machine (minus git history, virtualenv and checkpoints),
-# then start training there, but only if the copy succeeded
-rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ "$HOST:sft/" \
-  && ssh "$HOST" bash -s <<'EOF'
-cd sft
+# 1. Copy the code over, skipping git history, venv and checkpoints
+rsync -az --exclude .git --exclude .venv --exclude checkpoints \
+  ./ "$HOST:sft/" &&
 
-# Train on all 8 GPUs, in the background so it outlives this ssh session
-nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null &
+# If the copy worked, run the rest on the GPU machine (up to EOF)
+ssh "$HOST" bash -s <<'EOF'
+# 2. Train on all 8 GPUs, detached so it keeps going after ssh exits
+cd sft
+nohup torchrun --nproc_per_node=8 train.py \
+  > train.log 2>&1 < /dev/null &
 echo "started: pid $!"
 
-# Loading the model takes a while, so wait 90 seconds before checking
+# 3. Loading the model takes a while, so wait 90 seconds, then check
 sleep 90
 echo "tracebacks in log: $(grep -c Traceback train.log)"
 echo "last log line: $(tail -1 train.log)"
@@ -209,7 +211,7 @@ If you change the example, update `assets/before-after.html` to match and render
 ```bash
 # Render the updated example image with Chrome.
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=1000,942 \
+  --force-device-scale-factor=2 --window-size=1200,819 \
   --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
 ```
 

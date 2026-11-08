@@ -4,114 +4,175 @@
 <meta charset="utf-8">
 <style>
   :root {
-    --bg: #0f1117;
-    --panel: #171a23;
+    --bg: #0b0e14;
+    --panel: #141821;
+    --box: #0f131b;
     --line: #262b38;
     --ink: #e6e8ee;
     --muted: #8a92a6;
-    --comment: #7d8aa3;
-    --string: #e5c07b;
-    --keyword: #c678dd;
-    --var: #61afef;
-    --bad: #f27a7a;
-    --good: #7fd18b;
+    --red: #f27a7a;
+    --green: #7fd18b;
     --accent: #d97757;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "SF Mono", Menlo, Monaco, Consolas, monospace;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
     padding: 28px;
-    width: 1000px;
+    width: 1200px;
     background: var(--bg);
     color: var(--ink);
-    font: 13.5px/1.55 "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font: 13px/1.6 var(--mono);
+  }
+
+  /* Two panels whose rows line up: header, command, output, verdict */
+  .grid {
+    display: grid;
+    grid-template-columns: 0.68fr 1fr;
+    grid-template-rows: auto auto auto auto;
+    column-gap: 20px;
   }
   .panel {
+    grid-row: 1 / span 4;
+    display: grid;
+    grid-template-rows: subgrid;
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 18px 22px 20px;
-    margin-bottom: 22px;
+    border-radius: 14px;
+    padding: 20px;
   }
-  .panel:last-child { margin-bottom: 0; }
   .label {
-    font: 600 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
+    font: 600 13px/1 var(--sans);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
-  .label .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .without .label { color: var(--bad); }
-  .without .dot { background: var(--bad); }
-  .with .label { color: var(--good); }
-  .with .dot { background: var(--good); }
-  .call { color: var(--muted); margin-bottom: 6px; }
+  .label .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .without .label { color: var(--red); }
+  .without .dot { background: var(--red); }
+  .with .label { color: var(--green); }
+  .with .dot { background: var(--green); }
+  .call { margin-top: 10px; color: var(--muted); }
   .call b { color: var(--accent); font-weight: 600; }
   .call .desc { color: var(--ink); }
-  pre {
-    margin: 0;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    font: inherit;
+
+  /* A COMMAND or OUTPUT box, with its tag on the top-left border and a note on the top-right */
+  .box {
+    position: relative;
+    margin-top: 20px;
+    padding: 14px 12px 10px;
+    background: var(--box);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    white-space: pre;
   }
-  .cmd { padding-left: 18px; border-left: 2px solid var(--line); margin: 0 0 10px 6px; }
-  .out { padding-left: 18px; margin: 0 0 12px 6px; color: var(--ink); }
-  .out .gutter { color: var(--muted); }
-  .c { color: var(--comment); }
-  .s { color: var(--string); }
-  .k { color: var(--keyword); }
-  .v { color: var(--var); }
-  .agent { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; }
-  .agent.vague { color: var(--muted); font-style: italic; }
-  .summary b { font-weight: 700; }
-  .summary .arrow { color: var(--good); font-weight: 700; }
-  .caption {
-    margin-top: 12px;
-    font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  .box.bad { border-color: rgba(242, 122, 122, 0.55); background: rgba(242, 122, 122, 0.05); }
+  .box.good { border-color: rgba(127, 209, 139, 0.55); background: rgba(127, 209, 139, 0.05); }
+  /* The one-liner keeps its own height instead of stretching to match the long script */
+  .box.natural { align-self: start; }
+  .tag {
+    position: absolute;
+    top: -8px;
+    left: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--panel);
     color: var(--muted);
+    font: 700 9.5px/1.4 var(--sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
+
+  /* Notes: rounded pills, on a box's top border or at the right of a code row */
+  .pill {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 2px 10px;
+    border: 1px solid;
+    border-radius: 999px;
+    background: var(--panel);
+    font: 600 11px/1.4 var(--sans);
+    white-space: nowrap;
+  }
+  .box > .pill { top: -10px; right: 10px; transform: none; }
+  .pill.red { color: var(--red); border-color: rgba(242, 122, 122, 0.7); }
+  .pill.green { color: var(--green); border-color: rgba(127, 209, 139, 0.7); }
+
+  .row { position: relative; }
+  .gap { height: 8px; }
+  .cmt { font-weight: 700; }
+  /* A highlighted stretch of code, full width, with its note on the top-right border like every other box */
+  .hl {
+    position: relative;
+    margin: 10px -7px 6px;
+    padding: 11px 6px 5px;
+    border: 1px solid;
+    border-radius: 6px;
+  }
+  .hl > .pill { top: -10px; right: 10px; transform: none; }
+  .hl.green { border-color: rgba(127, 209, 139, 0.55); background: rgba(127, 209, 139, 0.06); }
+
+  /* The left panel's question and the right panel's summary, in the same row */
+  .note, .summary {
+    margin-top: 18px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    font: 14.5px/1.5 var(--sans);
+  }
+  .note {
+    border: 1px solid rgba(242, 122, 122, 0.45);
+    background: rgba(242, 122, 122, 0.07);
+    color: var(--red);
+    font-style: italic;
+  }
+  .summary {
+    border: 1px solid rgba(127, 209, 139, 0.45);
+    background: rgba(127, 209, 139, 0.07);
+  }
+  .summary .arrow { color: var(--green); font-weight: 700; }
+  .summary { position: relative; }
+  .summary > .pill { top: -10px; right: 10px; transform: none; }
 </style>
 </head>
 <body>
 
-<div class="panel without">
-  <div class="label"><span class="dot"></span>Without the skill</div>
-  <div class="call">● <b>Bash</b></div>
-  <pre class="cmd">rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ gpu-box:sft/ &amp;&amp; ssh gpu-box <span class="s">'cd sft; nohup torchrun --nproc_per_node=8 train.py &gt; train.log 2&gt;&amp;1 &lt; /dev/null &amp; echo $!; sleep 90; grep -c Traceback train.log; tail -1 train.log'</span></pre>
-  <pre class="out"><span class="gutter">⎿ </span>48213
-  0
-  step 12 | loss 2.39 | 3.4 s/step</pre>
-  <div class="agent vague">Let me check the next thing.</div>
-</div>
+<div class="grid">
 
-<div class="panel with">
-  <div class="label"><span class="dot"></span>With Legible</div>
-  <div class="call">● <b>Bash</b> · <span class="desc">Copy the code to the GPU machine and start training</span></div>
-  <pre class="cmd"><span class="c"># The GPU machine</span>
-<span class="v">HOST</span>=gpu-box
+<section class="panel without">
+  <div>
+    <div class="label"><span class="dot"></span>Without Legible</div>
+    <div class="call">● <b>Bash</b></div>
+  </div>
+  <div class="box bad natural"><span class="tag">Command</span><span class="pill red">one dense line</span>rsync -az --exclude .git --exclude .venv
+--exclude checkpoints ./ gpu-box:sft/ &amp;&amp; ssh
+gpu-box 'cd sft; nohup torchrun
+--nproc_per_node=8 train.py &gt; train.log 2&gt;&amp;1 &lt;
+/dev/null &amp; echo $!; sleep 90; grep -c Traceback
+train.log; tail -1 train.log'</div>
+  <div class="box bad"><span class="tag">Output</span><span class="pill red">unlabeled</span>48213
+0
+step 12 | loss 2.39 | 3.4 s/step</div>
+  <div class="note">What is 48213? Is 0 good or bad?<br>You have to decode the command to find out.</div>
+</section>
 
-<span class="c"># Copy the code to the GPU machine (minus git history, virtualenv and checkpoints),</span>
-<span class="c"># then start training there, but only if the copy succeeded</span>
-rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ <span class="s">"$HOST:sft/"</span> \
-  &amp;&amp; ssh <span class="s">"$HOST"</span> bash -s &lt;&lt;<span class="s">'EOF'</span>
-cd sft
+<section class="panel with">
+  <div>
+    <div class="label"><span class="dot"></span>With Legible</div>
+    <div class="call">● <b>Bash</b> · <span class="desc">Copy the code to the GPU machine and start training</span></div>
+  </div>
+  <div class="box"><span class="tag">Command</span><span class="pill green">numbered, commented steps</span><div class="row"><span class="cmt"># The GPU machine</span></div><div class="row">HOST=gpu-box</div><div class="gap"></div><div class="row"><span class="cmt"># 1. Copy the code over, skipping git history, venv and checkpoints</span></div><div class="row">rsync -az --exclude .git --exclude .venv --exclude checkpoints \</div><div class="row">  ./ "$HOST:sft/" &amp;&amp;</div><div class="hl green"><span class="pill green">says where it runs</span><div class="row"><span class="cmt"># If the copy worked, run the rest on the GPU machine (up to EOF)</span></div><div class="row">ssh "$HOST" bash -s &lt;&lt;'EOF'</div></div><div class="row"><span class="cmt"># 2. Train on all 8 GPUs, detached so it keeps going after ssh exits</span></div><div class="row">cd sft</div><div class="hl green"><span class="pill green">broken where the meaning changes</span>nohup torchrun --nproc_per_node=8 train.py \
+  &gt; train.log 2&gt;&amp;1 &lt; /dev/null &amp;</div><div class="row">echo "started: pid $!"</div><div class="gap"></div><div class="row"><span class="cmt"># 3. Loading the model takes a while, so wait 90 seconds, then check</span></div><div class="row">sleep 90</div><div class="row">echo "tracebacks in log: $(grep -c Traceback train.log)"</div><div class="row">echo "last log line: $(tail -1 train.log)"</div><div class="row">EOF</div></div>
+  <div class="box good"><span class="tag">Output</span><span class="pill green">labeled output</span>started: pid 48213
+tracebacks in log: 0
+last log line: step 12 | loss 2.39 | 3.4 s/step</div>
+  <div class="summary"><span class="pill green">one-line summary</span><span class="arrow">↳</span> <b>Execution summary</b> · code synced and training started (pid 48213): after 90 s it's at step 12, loss 2.39 at 3.4 s per step, with no tracebacks in the log</div>
+</section>
 
-<span class="c"># Train on all 8 GPUs, in the background so it outlives this ssh session</span>
-nohup torchrun --nproc_per_node=8 train.py &gt; train.log 2&gt;&amp;1 &lt; /dev/null &amp;
-echo <span class="s">"started: pid $!"</span>
-
-<span class="c"># Loading the model takes a while, so wait 90 seconds before checking</span>
-sleep 90
-echo <span class="s">"tracebacks in log: $(grep -c Traceback train.log)"</span>
-echo <span class="s">"last log line: $(tail -1 train.log)"</span>
-EOF</pre>
-  <pre class="out"><span class="gutter">⎿ </span>started: pid 48213
-  tracebacks in log: 0
-  last log line: step 12 | loss 2.39 | 3.4 s/step</pre>
-  <div class="agent summary"><span class="arrow">↳</span> <b>Execution summary</b> · code synced and training started (pid 48213): after 90 s it's at step 12, loss 2.39 at 3.4 s per step, with no tracebacks in the log</div>
 </div>
 
 </body>

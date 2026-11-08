@@ -13,11 +13,12 @@ Apply it for the whole session. The usual failure is drift: summaries get droppe
 
 ## 1. Write shell commands as narration
 
-- **Comment every step.** A short `#` line above each step says what it does and why. Someone reading only the comments should understand the plan. Comment the steps inside heredocs and inline scripts too.
+- **Comment every step.** A short `#` line above each step says what it does and why. Someone reading only the comments should understand the plan. Comment the steps inside heredocs and inline scripts too. Where shell syntax decides what runs, say it in words: "If the copy worked" for a trailing `&&`, "detached" for a trailing `&`.
+- **Number the steps** when a command has three or more, so the comments read as a plan.
 - **One step per line.** Avoid long `&&` or `;` chains on one line; break them across lines.
-- **Split long argument lists** with `\`, one flag (or flag and value) per line.
+- **Break lines where the meaning changes**, with `\`: a tool's options, then what it acts on; a launcher's options, then the program it runs; a command, then where its output goes; one pipeline stage per line.
 - **Name things once.** Put repeated paths, job IDs and hosts in variables at the top (`JOB_DIR=…`), not inline over and over.
-- **Use a heredoc script for remote or multi-step work**, not a quoted one-liner with escaped quotes: `ssh host bash -s <<'EOF'`. Quote the delimiter so variables expand on the remote side, and nest a different one (`<<'PY'`) for an inner script.
+- **Use a heredoc script for remote or multi-step work**, not a quoted one-liner with escaped quotes: `ssh host bash -s <<'EOF'`. Quote the delimiter so variables expand on the remote side, and nest a different one (`<<'PY'`) for an inner script. The comment above each heredoc says where its code runs and which marker ends it: "run the rest on the GPU machine (up to EOF)".
 - **Make waiting loops readable.** Say in a comment what ends the loop, and finish with a labeled line giving the outcome and the time.
 - **One purpose per command.** If a command does several unrelated things, split it or head each part with a comment.
 - **Describe it plainly.** If your tool asks for a short description of each command, say in plain words what it does ("Copy the code to the GPU machine and start training"). Don't repeat the command text.
@@ -65,23 +66,25 @@ If you find you dropped summaries earlier, say so, add the missing ones briefly,
 
 ## Examples
 
-A shell command: commented steps, the host named once, a heredoc for the remote part, labeled output, then the summary.
+A shell command: numbered and commented steps, the host named once, lines broken where the meaning changes, a heredoc whose comment says where it runs, labeled output, then the summary.
 
 ```bash
 # The GPU machine
 HOST=gpu-box
 
-# Copy the code to the GPU machine (minus git history, virtualenv and checkpoints),
-# then start training there, but only if the copy succeeded
-rsync -az --exclude .git --exclude .venv --exclude checkpoints ./ "$HOST:sft/" \
-  && ssh "$HOST" bash -s <<'EOF'
-cd sft
+# 1. Copy the code over, skipping git history, venv and checkpoints
+rsync -az --exclude .git --exclude .venv --exclude checkpoints \
+  ./ "$HOST:sft/" &&
 
-# Train on all 8 GPUs, in the background so it outlives this ssh session
-nohup torchrun --nproc_per_node=8 train.py > train.log 2>&1 < /dev/null &
+# If the copy worked, run the rest on the GPU machine (up to EOF)
+ssh "$HOST" bash -s <<'EOF'
+# 2. Train on all 8 GPUs, detached so it keeps going after ssh exits
+cd sft
+nohup torchrun --nproc_per_node=8 train.py \
+  > train.log 2>&1 < /dev/null &
 echo "started: pid $!"
 
-# Loading the model takes a while, so wait 90 seconds before checking
+# 3. Loading the model takes a while, so wait 90 seconds, then check
 sleep 90
 echo "tracebacks in log: $(grep -c Traceback train.log)"
 echo "last log line: $(tail -1 train.log)"
