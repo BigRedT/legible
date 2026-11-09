@@ -36,9 +36,9 @@ What is 48213? Is 0 good or bad? You have to decode the command to find out, and
 **With Legible**
 
 ```bash
-# ═════════════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────────
 # Goal: start training on the GPU machine and check it runs cleanly
-# ═════════════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────────
 
 # The GPU machine
 HOST=gpu-box

@@ -13,7 +13,7 @@ Apply it for the whole session. The usual failure is drift: summaries get droppe
 
 ## 1. Write shell commands as narration
 
-- **Open with the goal, set off by rules.** When a command has more than one step, it starts with a `# Goal:` comment between two comment lines of `═`, each about as long as the goal line, so the goal stands out from the step comments (see the example below). The goal is one sentence saying what the whole command is for, as an outcome a person cares about, not a list of the steps. The step comments say how; the goal says why the command exists, so a reader who stops there still knows what it was for.
+- **Open with the goal, set off by rules.** When a command has more than one step, it starts with a `# Goal:` comment between two comment lines of `─`, each about as long as the goal line, so the goal stands out from the step comments (see the example below). The goal is one sentence saying what the whole command is for, as an outcome a person cares about, not a list of the steps. The step comments say how; the goal says why the command exists, so a reader who stops there still knows what it was for.
 - **Comment every step.** A short `#` line above each step says what it does and why. Someone reading only the comments should understand the plan. Comment the steps inside heredocs and inline scripts too. Where shell syntax decides what runs, say it in words: "If the copy worked" for a trailing `&&`, "detached" for a trailing `&`.
 - **Number the steps** when a command has three or more, so the comments read as a plan.
 - **One step per line.** Avoid long `&&` or `;` chains on one line; break them across lines.
@@ -70,9 +70,9 @@ If you find you dropped summaries earlier, say so, add the missing ones briefly,
 A shell command: the goal between rules, numbered and commented steps, the host named once, lines broken where the meaning changes, a heredoc whose comment says where it runs, labeled output, then the summary.
 
 ```bash
-# ═════════════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────────
 # Goal: start training on the GPU machine and check it runs cleanly
-# ═════════════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────────
 
 # The GPU machine
 HOST=gpu-box
