@@ -36,6 +36,8 @@ What is 48213? Is 0 good or bad? You have to decode the command to find out, and
 **With Legible**
 
 ```bash
+# Goal: start training on the GPU machine and check it runs cleanly
+
 # The GPU machine
 HOST=gpu-box
 
@@ -70,7 +72,7 @@ last log line: step 12 | loss 2.39 | 3.4 s/step
 
 ## What it does
 
-- **Commands read as narration.** Every step gets a comment, one step per line, and remote work goes in a heredoc script instead of a quoted one-liner.
+- **Commands read as narration.** A multi-step command opens with a one-line goal, every step gets a comment, one step per line, and remote work goes in a heredoc script instead of a quoted one-liner.
 - **Output explains itself.** Values are labeled, logs are filtered to the lines that matter, both outcomes of a check are stated, and secrets are never printed.
 - **Every tool call ends with a summary.** Shell commands, file edits, calls to other services and subagents each get one line saying what came back and what it means. A batch of reads shares one.
 - **It holds up in long sessions.** A short check before each reply catches dropped summaries, the usual way agents drift.
@@ -211,7 +213,7 @@ If you change the example, update `assets/before-after.html` to match and render
 ```bash
 # Render the updated example image with Chrome.
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=1200,819 \
+  --force-device-scale-factor=2 --window-size=1200,894 \
   --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
 ```
 
