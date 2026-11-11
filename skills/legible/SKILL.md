@@ -15,6 +15,7 @@ Apply it for the whole session. The usual failure is drift: summaries get droppe
 
 - **Open with the goal, set off by rules.** When a command has more than one step, it starts with a `# Goal:` comment between two comment lines of `─`, each about as long as the goal line, so the goal stands out from the step comments (see the example below). The goal is one sentence saying what the whole command is for, as an outcome a person cares about, not a list of the steps. The step comments say how; the goal says why the command exists, so a reader who stops there still knows what it was for.
 - **Comment every step.** A short `#` line above each step says what it does and why. Someone reading only the comments should understand the plan. Comment the steps inside heredocs and inline scripts too. Where shell syntax decides what runs, say it in words: "If the copy worked" for a trailing `&&`, "detached" for a trailing `&`.
+- **Leave a blank line between sections.** Put an empty line before each commented step or section, including the first one inside a heredoc, so every comment visibly heads its own block.
 - **Number the steps** when a command has three or more, so the comments read as a plan.
 - **One step per line.** Avoid long `&&` or `;` chains on one line; break them across lines.
 - **Break lines where the meaning changes**, with `\`: a tool's options, then what it acts on; a launcher's options, then the program it runs; a command, then where its output goes; one pipeline stage per line.
@@ -83,6 +84,7 @@ rsync -az --exclude .git --exclude .venv --exclude checkpoints \
 
 # If the copy worked, run the rest on the GPU machine (up to EOF)
 ssh "$HOST" bash -s <<'EOF'
+
 # 2. Train on all 8 GPUs, detached so it keeps going after ssh exits
 cd sft
 nohup torchrun --nproc_per_node=8 train.py \

@@ -49,6 +49,7 @@ rsync -az --exclude .git --exclude .venv --exclude checkpoints \
 
 # If the copy worked, run the rest on the GPU machine (up to EOF)
 ssh "$HOST" bash -s <<'EOF'
+
 # 2. Train on all 8 GPUs, detached so it keeps going after ssh exits
 cd sft
 nohup torchrun --nproc_per_node=8 train.py \
@@ -215,7 +216,7 @@ If you change the example, update `assets/before-after.html` to match and render
 ```bash
 # Render the updated example image with Chrome.
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=1200,936 \
+  --force-device-scale-factor=2 --window-size=1200,944 \
   --screenshot=assets/before-after.png "file://$PWD/assets/before-after.html"
 ```
 
